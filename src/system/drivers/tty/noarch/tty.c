@@ -475,6 +475,14 @@ API_MOD_IOCTL(TTY, void *device_handle, int request, void *arg)
                 err = ttyedit_disable_echo(tty->editline);
                 break;
 
+        case IOCTL_TTY__RAW_MODE_ON:
+                err = ttyedit_enable_raw_mode(tty->editline);
+                break;
+
+        case IOCTL_TTY__RAW_MODE_OFF:
+                err = ttyedit_disable_raw_mode(tty->editline);
+                break;
+
         case IOCTL_TTY__GET_NUMBER_OF_TTYS:
                 if (arg) {
                         *cast(int*, arg) = _TTY_NUMBER_OF_VT;
@@ -667,63 +675,70 @@ static void vt100_analyze(tty_io_t *io, char c)
                 return;
 
         ttycmd_resp_t resp = ttycmd_analyze(tty->vtcmd, c);
-        switch (resp) {
-        case TTYCMD_KEY_ENTER:
-                handle_new_line(tty);
-                break;
+        if(ttyedit_is_raw_mode_enabled(tty->editline) == true)
+        {
+        	ttyedit_insert_char(tty->editline, c);
+        }
+        else
+        {
+        	switch (resp) {
+			case TTYCMD_KEY_ENTER:
+					handle_new_line(tty);
+					break;
 
-        case TTYCMD_KEY_CHAR:
-                ttyedit_insert_char(tty->editline, c);
-                break;
+			case TTYCMD_KEY_CHAR:
+					ttyedit_insert_char(tty->editline, c);
+					break;
 
-        case TTYCMD_KEY_ENDTEXT:
-                ttyedit_insert_char(tty->editline, c);
-                handle_new_line(tty);
-                break;
+			case TTYCMD_KEY_ENDTEXT:
+					ttyedit_insert_char(tty->editline, c);
+					handle_new_line(tty);
+					break;
 
-        case TTYCMD_KEY_BACKSPACE:
-                ttyedit_remove_char(tty->editline);
-                break;
+			case TTYCMD_KEY_BACKSPACE:
+					ttyedit_remove_char(tty->editline);
+					break;
 
-        case TTYCMD_KEY_DELETE:
-                ttyedit_delete_char(tty->editline);
-                break;
+			case TTYCMD_KEY_DELETE:
+					ttyedit_delete_char(tty->editline);
+					break;
 
-        case TTYCMD_KEY_ARROW_LEFT:
-                ttyedit_move_cursor_left(tty->editline);
-                break;
+			case TTYCMD_KEY_ARROW_LEFT:
+					ttyedit_move_cursor_left(tty->editline);
+					break;
 
-        case TTYCMD_KEY_ARROW_RIGHT:
-                ttyedit_move_cursor_right(tty->editline);
-                break;
+			case TTYCMD_KEY_ARROW_RIGHT:
+					ttyedit_move_cursor_right(tty->editline);
+					break;
 
-        case TTYCMD_KEY_ARROW_UP:
-                copy_string_to_queue(VT100_ARROW_UP_STDOUT, tty->queue_out, true, 0);
-                break;
+			case TTYCMD_KEY_ARROW_UP:
+					copy_string_to_queue(VT100_ARROW_UP_STDOUT, tty->queue_out, true, 0);
+					break;
 
-        case TTYCMD_KEY_ARROW_DOWN:
-                copy_string_to_queue(VT100_ARROW_DOWN_STDOUT, tty->queue_out, true, 0);
-                break;
+			case TTYCMD_KEY_ARROW_DOWN:
+					copy_string_to_queue(VT100_ARROW_DOWN_STDOUT, tty->queue_out, true, 0);
+					break;
 
-        case TTYCMD_KEY_TAB:
-                copy_string_to_queue(ttyedit_get_value(tty->editline), tty->queue_out, false, 0);
-                copy_string_to_queue(VT100_TAB, tty->queue_out, true, 0);
-                break;
+			case TTYCMD_KEY_TAB:
+					copy_string_to_queue(ttyedit_get_value(tty->editline), tty->queue_out, false, 0);
+					copy_string_to_queue(VT100_TAB, tty->queue_out, true, 0);
+					break;
 
-        case TTYCMD_KEY_HOME:
-                ttyedit_move_cursor_home(tty->editline);
-                break;
+			case TTYCMD_KEY_HOME:
+					ttyedit_move_cursor_home(tty->editline);
+					break;
 
-        case TTYCMD_KEY_END:
-                ttyedit_move_cursor_end(tty->editline);
-                break;
+			case TTYCMD_KEY_END:
+					ttyedit_move_cursor_end(tty->editline);
+					break;
 
-        case TTYCMD_KEY_F1...TTYCMD_KEY_F12:
-                switch_terminal(tty->io, resp - TTYCMD_KEY_F1);
-                break;
+			case TTYCMD_KEY_F1...TTYCMD_KEY_F12:
+					switch_terminal(tty->io, resp - TTYCMD_KEY_F1);
+					break;
 
-        default:
-                break;
+			default:
+					break;
+			}
         }
 }
 

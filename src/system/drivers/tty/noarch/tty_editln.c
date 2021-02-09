@@ -48,6 +48,7 @@ struct ttyedit {
         u16_t  length;
         u16_t  cursor_position;
         bool   echo_enabled;
+        bool   raw_mode_enabled;
 };
 
 /*==============================================================================
@@ -99,6 +100,7 @@ int ttyedit_create(FILE **out_file, ttyedit_t **edit)
                 (*edit)->self         = *edit;
                 (*edit)->out_file     = out_file;
                 (*edit)->echo_enabled = true;
+                (*edit)->raw_mode_enabled = false;
         }
 
         return err;
@@ -175,6 +177,62 @@ bool ttyedit_is_echo_enabled(ttyedit_t *this)
 {
         if (is_valid(this)) {
                 return this->echo_enabled;
+        }
+
+        return false;
+}
+
+//==============================================================================
+/**
+ * @brief Enable editline raw mode
+ *
+ * @param this          editline object
+ *
+ * @return One of errno value.
+ */
+//==============================================================================
+int ttyedit_enable_raw_mode(ttyedit_t *this)
+{
+        if (is_valid(this)) {
+                this->raw_mode_enabled = true;
+                return ESUCC;
+        } else {
+                return EINVAL;
+        }
+}
+
+//==============================================================================
+/**
+ * @brief Disable editline raw mode
+ *
+ * @param this          editline object
+ *
+ * @return One of errno value.
+ */
+//==============================================================================
+int ttyedit_disable_raw_mode(ttyedit_t *this)
+{
+        if (is_valid(this)) {
+                this->raw_mode_enabled = false;
+                return ESUCC;
+        } else {
+                return EINVAL;
+        }
+}
+
+//==============================================================================
+/**
+ * @brief Return raw mode status
+ *
+ * @param this          editline object
+ *
+ * @return true if echo enabled, false if not
+ */
+//==============================================================================
+bool ttyedit_is_raw_mode_enabled(ttyedit_t *this)
+{
+        if (is_valid(this)) {
+                return this->raw_mode_enabled;
         }
 
         return false;
