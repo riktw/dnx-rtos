@@ -1,4 +1,8 @@
 build/
+.cproject
+.settings/
+config/
+src/application/programs/initd/initd.c
 *.o
 *.lst
 *.d
@@ -11,6 +15,3 @@ build/
 *.out
 *.log
 *.aux
-.cproject
-.settings/
-config/

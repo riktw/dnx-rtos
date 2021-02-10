@@ -153,6 +153,9 @@ extern "C" {
  */
 #define IOCTL_TTY__ECHO_OFF                     _IO(TTY, 0x07)
 
+#define IOCTL_TTY__RAW_MODE_ON					_IO(TTY, 0x16)
+#define IOCTL_TTY__RAW_MODE_OFF 				_IO(TTY, 0x17)
+
 /**
  *  @brief  Set edit line to specified user's text (string).
  *  @param  [WR] const char * string passed to edit line
