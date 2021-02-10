@@ -24,7 +24,7 @@
          Full license text is available on the following file: doc/license.txt.
 
 
-*//*==========================================================================*/
+ *//*==========================================================================*/
 
 /**
 @defgroup drv-tty TTY Driver
@@ -83,7 +83,7 @@ Reading data from device is the same as reading data from regular file.
 Terminals can be switched by using F1 - F4 keys or by using ioctl() function.
 
 @{
-*/
+ */
 
 #ifndef _TTY_IOCTL_H_
 #define _TTY_IOCTL_H_
@@ -153,8 +153,17 @@ extern "C" {
  */
 #define IOCTL_TTY__ECHO_OFF                     _IO(TTY, 0x07)
 
-#define IOCTL_TTY__RAW_MODE_ON					_IO(TTY, 0x16)
-#define IOCTL_TTY__RAW_MODE_OFF 				_IO(TTY, 0x17)
+/**
+ *  @brief  Enable terminal raw mode.
+ *  @return On success 0 is returned, otherwise -1.
+ */
+#define IOCTL_TTY__RAW_MODE_ON	                _IO(TTY, 0x16)
+
+/**
+ *  @brief  Disable terminal raw mode.
+ *  @return On success 0 is returned, otherwise -1.
+ */
+#define IOCTL_TTY__RAW_MODE_OFF                 _IO(TTY, 0x17)
 
 /**
  *  @brief  Set edit line to specified user's text (string).

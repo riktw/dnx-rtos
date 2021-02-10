@@ -24,7 +24,7 @@
          Full license text is available on the following file: doc/license.txt.
 
 
-*//*==========================================================================*/
+ *//*==========================================================================*/
 
 /*==============================================================================
   Include files
@@ -133,9 +133,9 @@ static void initialize_basic_drivers(void)
         driver_init("UART", __CPU_UART_TERM__, 0, "/dev/ttyS0");        // UART1 will be used as TTY I/O
 
         static const TTY_config_t TTY_config = {
-                .input_file   = "/dev/ttyS0",
-                .output_file  = "/dev/ttyS0",
-                .clear_screen = true,
+                        .input_file   = "/dev/ttyS0",
+                        .output_file  = "/dev/ttyS0",
+                        .clear_screen = true,
         };
         driver_init2("TTY", 0, 0, "/dev/tty0", &TTY_config);     // first user terminal
 
@@ -219,24 +219,24 @@ static void initialize_additional_drivers(void)
 //==============================================================================
 static void mount_SD_card(void)
 {
-	// creating SD card nodes
-	driver_init("SDIO", 0, 0, "/dev/sda");
-	driver_init("SDIO", 0, 1, "/dev/sda1");
-	// SD Card initialization
-	FILE *f = fopen("/dev/sda", "r+");
-	if (f) {
-	        if (ioctl(fileno(f), IOCTL_STORAGE__INITIALIZE) != 0) {
-	                puts("SD initialization error");
-	        } else {
-	                if (ioctl(fileno(f), IOCTL_STORAGE__READ_MBR) != 0) {
-	                        puts("SD read MBR error");
-	                }
-	        }
-	        fclose(f);
-	}
-	// file system mount
-	mkdir("/mnt", 0777);
-    mount("fatfs", "/dev/sda1", "/mnt", "");
+        // creating SD card nodes
+        driver_init("SDIO", 0, 0, "/dev/sda");
+        driver_init("SDIO", 0, 1, "/dev/sda1");
+        // SD Card initialization
+        FILE *f = fopen("/dev/sda", "r+");
+        if (f) {
+                if (ioctl(fileno(f), IOCTL_STORAGE__INITIALIZE) != 0) {
+                        puts("SD initialization error");
+                } else {
+                        if (ioctl(fileno(f), IOCTL_STORAGE__READ_MBR) != 0) {
+                                puts("SD read MBR error");
+                        }
+                }
+                fclose(f);
+        }
+        // file system mount
+        mkdir("/mnt", 0777);
+        mount("fatfs", "/dev/sda1", "/mnt", "");
 }
 
 //==============================================================================
@@ -276,10 +276,10 @@ static void start_DHCP_client(void)
         puts("Starting DHCP client...\n");
 
         static const NET_INET_config_t cfg_dhcp = {
-                .mode    = NET_INET_MODE__DHCP_START,
-                .address = NET_INET_IPv4_ANY,
-                .mask    = NET_INET_IPv4_ANY,
-                .gateway = NET_INET_IPv4_ANY
+                        .mode    = NET_INET_MODE__DHCP_START,
+                        .address = NET_INET_IPv4_ANY,
+                        .mask    = NET_INET_IPv4_ANY,
+                        .gateway = NET_INET_IPv4_ANY
         };
 
         /*
@@ -306,14 +306,14 @@ static void start_user_programs(void)
          *    key. Terminal is connected to the tty0.
          */
         static const process_attr_t attr0 = {
-               .cwd        = "/",
-               .f_stderr   = NULL,
-               .f_stdin    = NULL,
-               .f_stdout   = NULL,
-               .detached   = true,
-               .p_stderr   = "/dev/tty0",
-               .p_stdin    = "/dev/tty0",
-               .p_stdout   = "/dev/tty0"
+                        .cwd        = "/",
+                        .f_stderr   = NULL,
+                        .f_stdin    = NULL,
+                        .f_stdout   = NULL,
+                        .detached   = true,
+                        .p_stderr   = "/dev/tty0",
+                        .p_stdin    = "/dev/tty0",
+                        .p_stdout   = "/dev/tty0"
         };
 
         process_create("dsh", &attr0);
@@ -324,14 +324,14 @@ static void start_user_programs(void)
          *    key. Terminal is connected to the tty1.
          */
         static const process_attr_t attr1 = {
-               .cwd        = "/",
-               .f_stderr   = NULL,
-               .f_stdin    = NULL,
-               .f_stdout   = NULL,
-               .detached   = true,
-               .p_stderr   = "/dev/tty1",
-               .p_stdin    = "/dev/tty1",
-               .p_stdout   = "/dev/tty1"
+                        .cwd        = "/",
+                        .f_stderr   = NULL,
+                        .f_stdin    = NULL,
+                        .f_stdout   = NULL,
+                        .detached   = true,
+                        .p_stderr   = "/dev/tty1",
+                        .p_stdin    = "/dev/tty1",
+                        .p_stdout   = "/dev/tty1"
         };
 
         process_create("dsh", &attr1);
@@ -342,14 +342,14 @@ static void start_user_programs(void)
          *    key. Application is connected to the tty2.
          */
         static const process_attr_t attr2 = {
-               .cwd        = "/",
-               .f_stderr   = NULL,
-               .f_stdin    = NULL,
-               .f_stdout   = NULL,
-               .detached   = true,
-               .p_stderr   = "/dev/tty2",
-               .p_stdin    = "/dev/tty2",
-               .p_stdout   = "/dev/tty2"
+                        .cwd        = "/",
+                        .f_stderr   = NULL,
+                        .f_stdin    = NULL,
+                        .f_stdout   = NULL,
+                        .detached   = true,
+                        .p_stderr   = "/dev/tty2",
+                        .p_stdin    = "/dev/tty2",
+                        .p_stdout   = "/dev/tty2"
         };
 
         process_create("user-program-name", &attr2);

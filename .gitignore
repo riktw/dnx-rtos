@@ -11,3 +11,6 @@ build/
 *.out
 *.log
 *.aux
+.cproject
+.settings/
+config/

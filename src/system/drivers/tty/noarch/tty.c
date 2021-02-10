@@ -24,7 +24,7 @@
          Full license text is available on the following file: doc/license.txt.
 
 
-*//*==========================================================================*/
+ *//*==========================================================================*/
 
 /*==============================================================================
   Include files
@@ -85,9 +85,9 @@ static int      dump_tty_buffer         (tty_t *tty, char *dst, size_t *size);
 MODULE_NAME(TTY);
 
 static const thread_attr_t SERVICE_IN_ATTR = {
-        .stack_depth = STACK_DEPTH_LOW,
-        .priority    = PRIORITY_NORMAL,
-        .detached    = true
+                .stack_depth = STACK_DEPTH_LOW,
+                .priority    = PRIORITY_NORMAL,
+                .detached    = true
 };
 
 /*==============================================================================
@@ -325,12 +325,12 @@ API_MOD_CLOSE(TTY, void *device_handle, bool force)
  */
 //==============================================================================
 API_MOD_WRITE(TTY,
-              void             *device_handle,
-              const u8_t       *src,
-              size_t            count,
-              fpos_t           *fpos,
-              size_t           *wrcnt,
-              struct vfs_fattr  fattr)
+                void             *device_handle,
+                const u8_t       *src,
+                size_t            count,
+                fpos_t           *fpos,
+                size_t           *wrcnt,
+                struct vfs_fattr  fattr)
 {
         UNUSED_ARG2(fpos, fattr);
 
@@ -363,12 +363,12 @@ API_MOD_WRITE(TTY,
  */
 //==============================================================================
 API_MOD_READ(TTY,
-             void            *device_handle,
-             u8_t            *dst,
-             size_t           count,
-             fpos_t          *fpos,
-             size_t          *rdcnt,
-             struct vfs_fattr fattr)
+                void            *device_handle,
+                u8_t            *dst,
+                size_t           count,
+                fpos_t          *fpos,
+                size_t          *rdcnt,
+                struct vfs_fattr fattr)
 {
         UNUSED_ARG1(fattr);
 
@@ -677,68 +677,74 @@ static void vt100_analyze(tty_io_t *io, char c)
         ttycmd_resp_t resp = ttycmd_analyze(tty->vtcmd, c);
         if(ttyedit_is_raw_mode_enabled(tty->editline) == true)
         {
-        	ttyedit_insert_char(tty->editline, c);
+                switch (resp) {
+                case TTYCMD_KEY_F1...TTYCMD_KEY_F12:
+                        switch_terminal(tty->io, resp - TTYCMD_KEY_F1);
+                break;
+                default:
+                        ttyedit_insert_char(tty->editline, c);
+                }
         }
         else
         {
-        	switch (resp) {
-			case TTYCMD_KEY_ENTER:
-					handle_new_line(tty);
-					break;
+                switch (resp) {
+                case TTYCMD_KEY_ENTER:
+                        handle_new_line(tty);
+                        break;
 
-			case TTYCMD_KEY_CHAR:
-					ttyedit_insert_char(tty->editline, c);
-					break;
+                case TTYCMD_KEY_CHAR:
+                        ttyedit_insert_char(tty->editline, c);
+                        break;
 
-			case TTYCMD_KEY_ENDTEXT:
-					ttyedit_insert_char(tty->editline, c);
-					handle_new_line(tty);
-					break;
+                case TTYCMD_KEY_ENDTEXT:
+                        ttyedit_insert_char(tty->editline, c);
+                        handle_new_line(tty);
+                        break;
 
-			case TTYCMD_KEY_BACKSPACE:
-					ttyedit_remove_char(tty->editline);
-					break;
+                case TTYCMD_KEY_BACKSPACE:
+                        ttyedit_remove_char(tty->editline);
+                        break;
 
-			case TTYCMD_KEY_DELETE:
-					ttyedit_delete_char(tty->editline);
-					break;
+                case TTYCMD_KEY_DELETE:
+                        ttyedit_delete_char(tty->editline);
+                        break;
 
-			case TTYCMD_KEY_ARROW_LEFT:
-					ttyedit_move_cursor_left(tty->editline);
-					break;
+                case TTYCMD_KEY_ARROW_LEFT:
+                        ttyedit_move_cursor_left(tty->editline);
+                        break;
 
-			case TTYCMD_KEY_ARROW_RIGHT:
-					ttyedit_move_cursor_right(tty->editline);
-					break;
+                case TTYCMD_KEY_ARROW_RIGHT:
+                        ttyedit_move_cursor_right(tty->editline);
+                        break;
 
-			case TTYCMD_KEY_ARROW_UP:
-					copy_string_to_queue(VT100_ARROW_UP_STDOUT, tty->queue_out, true, 0);
-					break;
+                case TTYCMD_KEY_ARROW_UP:
+                        copy_string_to_queue(VT100_ARROW_UP_STDOUT, tty->queue_out, true, 0);
+                        break;
 
-			case TTYCMD_KEY_ARROW_DOWN:
-					copy_string_to_queue(VT100_ARROW_DOWN_STDOUT, tty->queue_out, true, 0);
-					break;
+                case TTYCMD_KEY_ARROW_DOWN:
+                        copy_string_to_queue(VT100_ARROW_DOWN_STDOUT, tty->queue_out, true, 0);
+                        break;
 
-			case TTYCMD_KEY_TAB:
-					copy_string_to_queue(ttyedit_get_value(tty->editline), tty->queue_out, false, 0);
-					copy_string_to_queue(VT100_TAB, tty->queue_out, true, 0);
-					break;
+                case TTYCMD_KEY_TAB:
+                        copy_string_to_queue(ttyedit_get_value(tty->editline), tty->queue_out, false, 0);
+                        copy_string_to_queue(VT100_TAB, tty->queue_out, true, 0);
+                        break;
 
-			case TTYCMD_KEY_HOME:
-					ttyedit_move_cursor_home(tty->editline);
-					break;
+                case TTYCMD_KEY_HOME:
+                        ttyedit_move_cursor_home(tty->editline);
+                        break;
 
-			case TTYCMD_KEY_END:
-					ttyedit_move_cursor_end(tty->editline);
-					break;
+                case TTYCMD_KEY_END:
+                        ttyedit_move_cursor_end(tty->editline);
+                        break;
 
-			case TTYCMD_KEY_F1...TTYCMD_KEY_F12:
-					switch_terminal(tty->io, resp - TTYCMD_KEY_F1);
-					break;
+                case TTYCMD_KEY_F1...TTYCMD_KEY_F12:
+                switch_terminal(tty->io, resp - TTYCMD_KEY_F1);
+                break;
 
-			default:
-					break;
-			}
+                default:
+                        break;
+                }
         }
 }
 
@@ -810,7 +816,7 @@ static int switch_terminal(tty_io_t *io, int term_no)
 
                                         if (str) {
                                                 sys_fwrite(str, strlen(str), &wrcnt,
-                                                           io->outfile);
+                                                                io->outfile);
                                         }
                                 }
 
@@ -882,9 +888,9 @@ static int show_fresh_line(tty_t *tty)
 
                                 if (tty->flushed) {
                                         sys_fwrite(VT100_CLEAR_LINE,
-                                                   strlen(VT100_CLEAR_LINE),
-                                                   &wrcnt,
-                                                   tty->io->outfile);
+                                                        strlen(VT100_CLEAR_LINE),
+                                                        &wrcnt,
+                                                        tty->io->outfile);
 
                                         tty->flushed = false;
                                 }
@@ -944,15 +950,15 @@ static int refresh_last_line(tty_t *tty)
                         size_t wrcnt;
 
                         sys_fwrite(VT100_CLEAR_LINE, strlen(VT100_CLEAR_LINE),
-                                   &wrcnt, tty->io->outfile);
+                                        &wrcnt, tty->io->outfile);
 
                         const char *last_line = ttybfr_get_line(tty->screen, 0);
                         sys_fwrite(last_line, strlen(last_line),
-                                   &wrcnt, tty->io->outfile);
+                                        &wrcnt, tty->io->outfile);
 
                         const char *editline = ttyedit_get_value(tty->editline);
                         sys_fwrite(editline, strlen(editline),
-                                   &wrcnt, tty->io->outfile);
+                                        &wrcnt, tty->io->outfile);
 
                         tty->flushed = true;
 
