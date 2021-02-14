@@ -219,66 +219,24 @@ static void initialize_additional_drivers(void)
 //==============================================================================
 static void mount_SD_card(void)
 {
-        /*
-         * 1. SD Card is connected to the microcontroller by using SPI interface.
-         *    In this case (stm32f1xx) SD card is connected to the SPI1. In this
-         *    case the SPI driver should be initialized.
-         *    The /dev/spi_sda is the SPI interface path that is used by SD card
-         *    driver as data source.
-         */
-        driver_init("SPI", 0, 0, "/dev/spi_sda");
-
-        /*
-         * 2. SPI interface should be configured to meet SD card requirements.
-         *    In this case SPI interface is opened and configured.
-         */
-        FILE *f = fopen("/dev/spi_sda", "r+");
-        if (f) {
-                static const SPI_config_t cfg = {
-                        .flush_byte  = 0xFF,
-                        .clk_divider = SPI_CLK_DIV__8,
-                        .mode        = SPI_MODE__0,
-                        .msb_first   = true,
-                        .CS_port_idx = IOCTL_GPIO_PORT_IDX__NULL,      // port name configured in GPIO driver
-                        .CS_pin_idx  = IOCTL_GPIO_PIN_IDX__NULL        // pin name configured in GPIO driver
-                };
-
-                // configuration setup
-                ioctl(fileno(f), IOCTL_SPI__SET_CONFIGURATION, &cfg);
-                fclose(f);
-        }
-
-        /*
-         * 3. Initialization of SD card driver - SDSPI. This module handle SD card
-         *    by using SPI interface.
-         */
-        driver_init("SDSPI", 0, 0, "/dev/sda");
-        driver_init("SDSPI", 0, 1, "/dev/sda1");
-        driver_init("SDSPI", 0, 2, "/dev/sda2");
-
-        /*
-         * 4. SD Card initialization and MBR read. After this operation SD card
-         *    is ready to use and driver know how many partitions is on the card.
-         */
-        f = fopen("/dev/sda", "r+");
-        if (f) {
-                static const SDSPI_config_t cfg = {
-                         .filepath = "/dev/spi_sda",    // SPI interface connected to SD card
-                         .timeout  = 1000
-                };
-
-                ioctl(fileno(f), IOCTL_SDSPI__CONFIGURE, &cfg);
-                ioctl(fileno(f), IOCTL_STORAGE__INITIALIZE);
-                ioctl(fileno(f), IOCTL_STORAGE__READ_MBR);
-                fclose(f);
-        }
-
-        /*
-         * 5. Partition mount. The partition contains e.g. FAT32 file system.
-         *    The file system will be mounted in the /mnt folder created in the
-         *    previous stage. The EXT2,3,4 can be used alternatively (ext4fs).
-         */
-        mount("fatfs", "/dev/sda1", "/mnt", "");
+	// creating SD card nodes
+	driver_init("SDIO", 0, 0, "/dev/sda");
+	driver_init("SDIO", 0, 1, "/dev/sda1");
+	// SD Card initialization
+	FILE *f = fopen("/dev/sda", "r+");
+	if (f) {
+	        if (ioctl(fileno(f), IOCTL_STORAGE__INITIALIZE) != 0) {
+	                puts("SD initialization error");
+	        } else {
+	                if (ioctl(fileno(f), IOCTL_STORAGE__READ_MBR) != 0) {
+	                        puts("SD read MBR error");
+	                }
+	        }
+	        fclose(f);
+	}
+	// file system mount
+	mkdir("/mnt", 0777);
+    mount("fatfs", "/dev/sda1", "/mnt", "");
 }
 
 //==============================================================================
