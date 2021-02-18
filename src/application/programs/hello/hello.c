@@ -32,6 +32,8 @@ Brief
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
 
 /*==============================================================================
   Local macros
@@ -76,10 +78,22 @@ PROGRAM_PARAMS(hello, STACK_DEPTH_VERY_LOW);
 //==============================================================================
 int main(int argc, char *argv[])
 {
-        printf("Hello world!");
-        printf("test of float: %f\r\n", 13.37);
-        printf("test of float with precision: %.2f\r\n", 13.37);
-        return EXIT_SUCCESS;
+	printf("Hello world!");
+	static const u8_t LED = 13;
+
+	FILE *f = fopen("/dev/GPIOC", "r+");
+		if (f)
+		{
+			for(int i = 0; i < 20; ++i)
+			{
+				ioctl(fileno(f), IOCTL_GPIO__TOGGLE_PIN, &LED);
+				msleep(500);
+			}
+			fclose(f);
+		} else {
+			perror(NULL);
+		}
+	return EXIT_SUCCESS;
 }
 
 /*==============================================================================

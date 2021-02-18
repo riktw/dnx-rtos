@@ -45,19 +45,19 @@
 #/*-- Flag is set in __CPU_NAME__ event
 # this:AddWidget("Value")
 #--*/
-#define __CPU_FAMILY__ _STM32F4XX_ADVANCEDLINE_
+#define __CPU_FAMILY__ _STM32F4XX_ACCESSLINE_
 
 #/*-- Flag is set in __CPU_NAME__ event
 # this:AddWidget("Value")
 #--*/
-#define __CPU_SERIES__ _STM32F429xx
+#define __CPU_SERIES__ _STM32F411xE
 
 #/*-- Flag is set in __CPU_NAME__ event
 # this:AddWidget("Value")
 #--*/
-#define __LD_SCRIPT__ STM32F42xxIxx
+#define __LD_SCRIPT__ STM32F411xExx
 #/*
-__LD_SCRIPT__=STM32F42xxIxx
+__LD_SCRIPT__=STM32F411xExx
 #*/
 
 #/*--
@@ -230,9 +230,9 @@ __LD_SCRIPT__=STM32F42xxIxx
 #    end
 # )
 #--*/
-#define __CPU_NAME__ STM32F429BIxx
+#define __CPU_NAME__ STM32F411CExx
 #/*
-__CPU_NAME__=STM32F429BIxx
+__CPU_NAME__=STM32F411CExx
 #*/
 
 #/*

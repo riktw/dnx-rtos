@@ -447,6 +447,9 @@ dependencies :
 linkobjects :
 	@$(ECHO) "Linking..."
 	@$(LD) $(TARGET_PATH)/$(PROJECT).a $(LFLAGS) -o $(TARGET_PATH)/$(PROJECT).elf
+	@$(ECHO) "Create symbols file"
+	@$(RUNGENS) "./src/application/programs/run/mkdefines.sh"
+	
 	@#$(LD) $(OBJECTS_ALL) $(LFLAGS) -o $(TARGET_PATH)/$(PROJECT).elf
 
 ####################################################################################################

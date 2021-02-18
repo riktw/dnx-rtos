@@ -57,7 +57,7 @@ this:AddItem("Disable", "DISABLE")
 this:SetEvent("clicked", function() this.CalculateFreq() end)
 this:AddExtraWidget("Label", "LABEL_LSI_ON", "")
 --*/
-#define __CLK_LSI_ON__ DISABLE
+#define __CLK_LSI_ON__ ENABLE
 
 /*--
 this:AddWidget("Combobox", "LSE oscillator")
@@ -101,7 +101,7 @@ this:AddWidget("Spinbox", 2, 63, "Clock divider (M)")
 this:SetEvent("clicked", function() this.CalculateFreq() end)
 this:AddExtraWidget("Label", "LABEL_PLL_SRC_DIV_M", "")
 --*/
-#define __CLK_PLL_SRC_DIV_M__ 4
+#define __CLK_PLL_SRC_DIV_M__ 25
 
 /*--
 this:AddExtraWidget("Label", "LABEL_PLL", "\nMain PLL Configuration", -1, "bold")
@@ -122,7 +122,7 @@ this:AddWidget("Spinbox", 50, 432, "Clock multiplier (N)")
 this:SetEvent("clicked", function() this.CalculateFreq() end)
 this:AddExtraWidget("Label", "LABEL_PLL_N", "")
 --*/
-#define __CLK_PLL_N__ 168
+#define __CLK_PLL_N__ 240
 
 /*--
 this:AddWidget("Combobox", "Main clock divider (P)")
@@ -133,21 +133,21 @@ this:AddItem("VCO divided by 8",  "8")
 this:SetEvent("clicked", function() this.CalculateFreq() end)
 this:AddExtraWidget("Label", "LABEL_PLL_P", "")
 --*/
-#define __CLK_PLL_P__ 2
+#define __CLK_PLL_P__ 4
 
 /*--
 this:AddWidget("Spinbox", 2, 15, "USB, SDIO clock divider (Q)")
 this:SetEvent("clicked", function() this.CalculateFreq() end)
 this:AddExtraWidget("Label", "LABEL_PLL_Q", "")
 --*/
-#define __CLK_PLL_Q__ 7
+#define __CLK_PLL_Q__ 5
 
 /*--
 this:AddWidget("Spinbox", 2, 7, "I2S, SAI clock divider (R)")
 this:SetEvent("clicked", function() this.CalculateFreq() end)
 this:AddExtraWidget("Label", "LABEL_PLL_R", "")
 --*/
-#define __CLK_PLL_R__ 7
+#define __CLK_PLL_R__ 5
 
 //==============================================================================
 // PLLI2S Configuration
@@ -319,7 +319,7 @@ for i = 2, 31 do this:AddItem("HSE clock divided by "..i, "RCC_RTCCLKSource_HSE_
 this:SetEvent("clicked", function() this.CalculateFreq() end)
 this:AddExtraWidget("Label", "LABEL_RTCCLK_SRC", "")
 --*/
-#define __CLK_RTC_CLK_SRC__ RCC_RTCCLKSource_LSE
+#define __CLK_RTC_CLK_SRC__ RCC_RTCCLKSource_LSI
 
 /*--
 this:AddWidget("Combobox", "MCO1 Clock source")
@@ -331,7 +331,7 @@ this:AddItem("PLLCLK", "RCC_MCO1Source_PLLCLK")
 this:SetEvent("clicked", function() this.CalculateFreq() end)
 this:AddExtraWidget("Label", "LABEL_MCO1_SRC", "")
 --*/
-#define __CLK_MC01_CLK_SRC__ RCC_MCO1Source_HSE
+#define __CLK_MC01_CLK_SRC__ RCC_MCO1Source_PLLCLK
 
 /*--
 this:AddWidget("Combobox", "MCO1 Clock divisor (output)")
@@ -744,13 +744,13 @@ this:AddExtraWidget("Label", "LABEL_FLASH_LATENCY", "")
 -- Value calculated automatically
 this:AddWidget("Value")
 --*/
-#define __CLK_FLASH_LATENCY__ 5
+#define __CLK_FLASH_LATENCY__ 1
 
 /*--
 -- Value calculated automatically
 this:AddWidget("Value")
 --*/
-#define __CLK_HCLK_FREQ__ 168000000
+#define __CLK_HCLK_FREQ__ 60000000
 
 //==============================================================================
 // Calculation script

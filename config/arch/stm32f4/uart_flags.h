@@ -292,7 +292,7 @@ this:AddItem("4000000", "")
 this:AddWidget("Combobox", "IRQ priority")
 uC.AddPriorityItems(this, false)
 --*/
-#define __UART_IRQ_PRIORITY__ __CPU_DEFAULT_IRQ_PRIORITY__
+#define __UART_IRQ_PRIORITY__ 13
 
 #endif /* _UART_FLAGS_H_ */
 /*==============================================================================

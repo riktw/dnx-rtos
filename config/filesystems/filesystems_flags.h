@@ -69,9 +69,9 @@ __ENABLE_RAMFS__=_YES_
 # this:AddExtraWidget("Hyperlink", "PROCFS_CONFIGURE", "")
 # this:SetEvent("clicked", "PROCFS_CONFIGURE", function() end)
 #--*/
-#define __ENABLE_PROCFS__ _NO_
+#define __ENABLE_PROCFS__ _YES_
 #/*
-__ENABLE_PROCFS__=_NO_
+__ENABLE_PROCFS__=_YES_
 #*/
 
 #/*--
@@ -84,9 +84,9 @@ __ENABLE_PROCFS__=_NO_
 # this:SetEvent("clicked", "FATFS_CONFIGURE", function() this:LoadFile("filesystems/fatfs_flags.h") end)
 #--*/
 #include "../filesystems/fatfs_flags.h"
-#define __ENABLE_FATFS__ _NO_
+#define __ENABLE_FATFS__ _YES_
 #/*
-__ENABLE_FATFS__=_NO_
+__ENABLE_FATFS__=_YES_
 #*/
 
 #/*--

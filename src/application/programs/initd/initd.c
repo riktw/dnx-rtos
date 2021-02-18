@@ -42,6 +42,8 @@
 #include <dnx/net.h>
 #include <unistd.h>
 
+#include "../run/run.h"
+
 /*==============================================================================
   Local symbolic constants/macros
 ==============================================================================*/
@@ -89,6 +91,10 @@ static void create_base_file_system_structure(void)
         mkdir("/tmp", 0666);    // this folder store temporary files
         mkdir("/run", 0666);    // this folder store runtime files
         mkdir("/mnt", 0666);    // this folder store SD card content
+        mkdir("/proc", 0666);    // this folder stores procfs
+        mkdir("/rom", 0666);    // this folder stores procfs
+        mount("procfs", "", "/proc", "");
+        mount("romfs", "", "/rom", "");
 
         /*
          * NOTE: Number and naming of folders depends on user needs. There can
@@ -411,6 +417,7 @@ int main(int argc, char *argv[])
 
         // 10. If needed, the initd can continue work. It can be used as daemon.
         // while (true) {...}
+        init_runner();
 
         // 11. Or can be closed if not needed anymore.
         return EXIT_SUCCESS;

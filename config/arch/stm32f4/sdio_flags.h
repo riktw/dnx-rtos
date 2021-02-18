@@ -78,7 +78,7 @@ this:AddItem("Never", "_SDIO_USE_DMA_NEVER")
 this:AddItem("If available", "_SDIO_USE_DMA_IFAVAILABLE")
 this:AddItem("Always", "_SDIO_USE_DMA_ALWAYS")
 --*/
-#define __SDIO_CFG_USEDMA__ _SDIO_USE_DMA_ALWAYS
+#define __SDIO_CFG_USEDMA__ _SDIO_USE_DMA_NEVER
 
 /*--
 this:AddWidget("Combobox", "IRQ priority")

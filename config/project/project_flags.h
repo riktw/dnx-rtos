@@ -91,22 +91,22 @@ __PROJECT_TOOLCHAIN__=arm-none-eabi-
 # this:AddItem("STMicroelectronics STM32H7", "stm32h7")
 # this:AddItem("Silicon Labs EFR32 Mighty Gecko (experimental)", "efr32")
 #--*/
-#define __CPU_ARCH__ stm32f1
+#define __CPU_ARCH__ stm32f4
 #/*
-__CPU_ARCH__=stm32f1
+__CPU_ARCH__=stm32f4
 #*/
 
 #/*--
 # this:AddWidget("Spinbox", 1e6, 100e6, "Oscillator frequency [Hz]")
 # this:SetToolTip("This is a frequency of a connected to the microcontroller external generator or crystal.")
 #--*/
-#define __CPU_OSC_FREQ__ 8000000
+#define __CPU_OSC_FREQ__ 25000000
 
 #/*--
 # this:AddWidget("Spinbox", 0, 16, "Terminal UART")
 # this:SetToolTip("This value set UART terminal. This is UART major number.")
 #--*/
-#define __CPU_UART_TERM__ 0
+#define __CPU_UART_TERM__ 1
 
 #endif /* _PROJECT_FLAGS_H_ */
 #/*=============================================================================
