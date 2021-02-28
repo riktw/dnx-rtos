@@ -38,6 +38,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include "run.h"
 
 #ifndef DOX
 
@@ -91,9 +92,9 @@ extern void arch_jumpTo(entry_t entry);
 
 #endif
 
-#define DBG(...) printf("ELF_DBG: " __VA_ARGS__)
+#define DBG(...)// printf("ELF_DBG: " __VA_ARGS__)
 #define ERR(...) do { printf("ELF_ERR: " __VA_ARGS__); __asm__ volatile ("bkpt"); } while(0)
-#define MSG(msg) puts("ELF_MSG: " msg)
+#define MSG(msg)// puts("ELF_MSG: " msg)
 
 #else
 
@@ -267,26 +268,57 @@ extern void arch_jumpTo(entry_t entry);
  * Exported symbol struct
  */
 typedef struct {
-  char name[80]; /*!< Name of symbol */
-  void *ptr; /*!< Pointer of symbol in memory */
+	char name[80]; /*!< Name of symbol */
+	void *ptr; /*!< Pointer of symbol in memory */
 } ELFSymbol_t;
+
+
+typedef struct ELFEnv {
+	const ELFSymbol_t *exported; /*!< Pointer to exported symbols array */
+	unsigned int exported_size; /*!< Elements on exported symbol array */
+} ELFEnv_t;
+
 
 /**
  * Environment for execution
  */
-typedef struct ELFEnv {
-  const ELFSymbol_t *exported; /*!< Pointer to exported symbols array */
-  unsigned int exported_size; /*!< Elements on exported symbol array */
-} ELFEnv_t;
 
 static uint32_t getUndefinedSymbol(LOADER_USERDATA_T *userdata, const char *sName) {
-  const ELFEnv_t *env = userdata->env;
-  unsigned int i;
-  for (i = 0; i < env->exported_size; i++)
-    if (LOADER_STREQ(env->exported[i].name, sName))
-      return (uint32_t) (env->exported[i].ptr);
-  DBG("  Can not find address for symbol %s\n", sName);
-  return 0xffffffff;
+	const ELFEnv_t *env = userdata->env;
+	unsigned int i;
+
+	FILE* fp = fopen("/rom/symbols.txt", "r"); //TODO: error checking
+	char line[255] = { 0 };
+	char* token;
+	const char s[2] = " ";
+	while(fgets(line, 255, fp) != NULL)
+	{
+		token = strtok1(line, s);
+		if(strlen(token) > 100)
+		{
+			printf("Symbol name too long!");
+		}
+
+		if (LOADER_STREQ(token, sName))
+		{
+			token = strtok1(NULL, s);
+			uint32_t address =  strtol(token, NULL, 0);
+			address = address + 1;
+			token = strtok1(NULL, s);
+			return address;
+		}
+		else
+		{
+			token = strtok1(NULL, s);
+			token = strtok1(NULL, s);
+		}
+	}
+	fclose(fp);
+	for (i = 0; i < env->exported_size; i++)
+		if (LOADER_STREQ(env->exported[i].name, sName))
+			return (uint32_t) (env->exported[i].ptr);
+	DBG("  Can not find address for symbol %s\n", sName);
+	return 0xffffffff;
 }
 
 

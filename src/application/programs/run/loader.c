@@ -354,7 +354,6 @@ static int relocate(ELFExec_t *e, Elf32_Shdr *h, ELFSection_t *s,
         readSymbol(e, symEntry, &sym, name, sizeof(name));
         DBG(" %08X %08X %-16s %s\n", rel.r_offset, rel.r_info, typeStr(relType),
             name);
-        printf("Name: %s \n", name);
 
         symAddr = addressOf(e, &sym, name);
         if (symAddr != 0xffffffff) {

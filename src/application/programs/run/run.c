@@ -56,7 +56,7 @@ Brief
 ==============================================================================*/
 GLOBAL_VARIABLES_SECTION {
 	bool elf_inited;
-	ELFSymbol_t exports[300];
+	ELFSymbol_t exports[10];
 	ELFEnv_t env;
 	char* sp;
 };
@@ -79,7 +79,6 @@ PROGRAM_PARAMS(run, STACK_DEPTH_LARGE);
   Function definitions
 ==============================================================================*/
 typedef void (*fnc_ptr)(void);
-char* strtok1(char* str, const char* delimiters);
 
 void init_runner()
 {
@@ -88,40 +87,11 @@ void init_runner()
 
 void init_elf()
 {
-	char* token;
 	if(!global->elf_inited)
 	{
-		char line[255] = { 0 };
 		int counter = 0;
-		const char s[2] = " ";
-
 		global->elf_inited = true;
-		FILE* fp = fopen("/rom/symbols.txt", "r");
-		while(fgets(line, 255, fp) != NULL)
-		{
-			token = strtok1(line, s);
-			if(strlen(token) > sizeof(global->exports[0].name))
-			{
-				printf("Symbol name too long!");
-			}
-			strcpy(global->exports[counter].name, token);
 
-			token = strtok1(NULL, s);
-			uint32_t address =  strtol(token, NULL, 0);
-			address = address + 1;
-			global->exports[counter].ptr = (void*)address;
-			++counter;
-			token = strtok1(NULL, s);
-			if(counter >= 300)
-			{
-				printf("Too many symbols!");
-				break;
-			}
-		}
-
-		strcpy(global->exports[counter].name, "stdout");
-		global->exports[counter].ptr = (void*)stdout;
-		++counter;
 
 		for(unsigned int i = 0; i < (sizeof(appendedExports) / sizeof(*appendedExports)); ++i)
 		{
@@ -129,6 +99,11 @@ void init_elf()
 			global->exports[counter].ptr = appendedExports[i].ptr;
 			++counter;
 		}
+
+		//stdout is not const.
+		strcpy(global->exports[counter].name, "stdout");
+		global->exports[counter].ptr = (void*)stdout;
+		++counter;
 
 		global->env.exported = global->exports;
 		global->env.exported_size = counter;
@@ -183,6 +158,33 @@ int is_streq(const char *s1, const char *s2) {
 	return *s1 == *s2;
 }
 
+
+//==============================================================================
+/**
+ * Main program function.
+ *
+ * Note: Please adjust stack size according to programs needs.
+ *
+ * @param argc      argument count
+ * @param argv      arguments
+ */
+//==============================================================================
+int main(int argc, char *argv[])
+{
+	init_elf();
+	if (argc >= 2)
+	{
+		if(exec_elf(argv[1], &global->env) == -1)
+		{
+			printf("This file does not exist or is invalid\n");
+		}
+	} else
+	{
+		printf("Runs elf programs. Usage: run <programname.elf>\n");
+	}
+
+	return EXIT_SUCCESS;
+}
 
 char* strtok1(char* str, const char* delimiters)
 {
@@ -240,33 +242,6 @@ char* strtok1(char* str, const char* delimiters)
 	}
 
 	return p_start;
-}
-
-//==============================================================================
-/**
- * Main program function.
- *
- * Note: Please adjust stack size according to programs needs.
- *
- * @param argc      argument count
- * @param argv      arguments
- */
-//==============================================================================
-int main(int argc, char *argv[])
-{
-	init_elf();
-	if (argc >= 2)
-	{
-		if(exec_elf(argv[1], &global->env) == -1)
-		{
-			printf("This file does not exist or is invalid\n");
-		}
-	} else
-	{
-		printf("Runs elf programs. Usage: run <programname.elf>\n");
-	}
-
-	return EXIT_SUCCESS;
 }
 
 /*==============================================================================
